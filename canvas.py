@@ -3,6 +3,12 @@
 
 import pygame # type: ignore
 import sys
+from preprocess import preprocess_image
+import numpy as np
+import torch # type: ignore
+import numpy as np
+from preprocess import preprocess_image
+
 
 # Initialize Pygame
 pygame.init()
@@ -26,7 +32,28 @@ brush_size = 8   # thickness of line
 def draw_line(surface, start, end):
     pygame.draw.line(surface, BLACK, start, end, brush_size)
 
+classes = ["rock", "paper", "scissors"]
+
+# Load PyTorch model
+from train_classifier_pytorch import RPScnn
+
+model = RPScnn()
+model.load_state_dict(torch.load("rps_model.pt", weights_only=True))
+model.eval()
+
+def classify_image(path="drawing.png"):
+    img = preprocess_image(path)  # (64,64,1)
+    img = np.transpose(img, (2,0,1))  # (1,64,64)
+    img = torch.tensor(img, dtype=torch.float32).unsqueeze(0)  # (1,1,64,64)
+
+    with torch.no_grad():
+        output = model(img)
+        prediction = torch.argmax(output, dim=1).item()
+
+    return classes[prediction]
+
 while True:
+    number = 1
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -50,8 +77,10 @@ while True:
                 screen.fill(WHITE)  # clear screen
             if event.key == pygame.K_s:
                 pygame.image.save(screen, "drawing.png")
-                print("Saved drawing as drawing.png")
+                result = classify_image("drawing.png")
+                print("You drew:", result)
             if event.key == pygame.K_ESCAPE:
+                player_choice = classify_image("drawing.png")
                 pygame.quit()
                 sys.exit()
 
@@ -63,3 +92,6 @@ while True:
         last_pos = mouse_pos
 
     pygame.display.update()
+
+
+# decition stored in player_choice variable
