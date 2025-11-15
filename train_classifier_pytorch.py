@@ -1,4 +1,4 @@
-# This is for training the classifier (AI)
+# This is for training the classifier (AI) This doesn't matter for the game to run
 
 import torch # type: ignore
 import torch.nn as nn # type: ignore

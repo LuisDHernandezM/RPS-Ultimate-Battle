@@ -1,4 +1,6 @@
 # This file is for processing the drawings and cleaning it up
+# # It uses OpenCV to preprocess the image for model prediction
+# Helper file for AI, not important for main logic
 
 import cv2 # type: ignore
 import numpy as np
