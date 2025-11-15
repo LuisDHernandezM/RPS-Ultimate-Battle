@@ -25,7 +25,7 @@ def play_game(user_choice):
         'winner': winner
     }
 
-# Example usage:
+# Testing for running this file as main
 if __name__ == "__main__":
     user_choice = input("Enter rock, paper, or scissors: ").lower()
     result = play_game(user_choice)
@@ -38,6 +38,3 @@ if __name__ == "__main__":
     else:
         print("Computer wins!")
 
-#     print("Thank you for playing!")
-#     if __name__ == "__main__":
-#         main()
