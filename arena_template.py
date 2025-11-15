@@ -4,6 +4,7 @@ import pygame # type: ignore
 import sys
 import time
 from canvas import draw_character
+import math
 
 # 1. ---- Launch canvas and get drawing + label ----
 image_path, label = draw_character()
@@ -15,31 +16,42 @@ print("Image saved as:", image_path)
 pygame.init()
 
 # --- Window setup ---
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1400, 800
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("RPS Battle Arena")
 
 clock = pygame.time.Clock()
+size_number = 75
+size = (size_number, size_number)
 
 # --- Fighter class ---
 class Fighter:
     def __init__(self, image_path, x, y):
         self.image = pygame.image.load(image_path).convert_alpha()
-        self.image = pygame.transform.scale(self.image, (150, 150))
+        self.image = pygame.transform.scale(self.image, (size))
         self.x = x
         self.y = y
         self.health = 100
+        self.speed = 5 # movement speed in pixels per frame
     
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
         self.draw_health_bar(screen)
 
     def draw_health_bar(self, screen):
-        bar_width = 150
-        bar_height = 15
+        bar_width = size_number
+        bar_height = 10
         fill = (self.health / 100) * bar_width
         pygame.draw.rect(screen, (255, 0, 0), (self.x, self.y - 20, bar_width, bar_height))
         pygame.draw.rect(screen, (0, 255, 0), (self.x, self.y - 20, fill, bar_height))
+    
+    def move(self, dx, dy):
+        self.x += dx
+        self.y += dy
+
+        # Keep inside the screen
+        self.x = max(0, min(self.x, WIDTH - size_number))  # WIDTH - sprite width
+        self.y = max(20, min(self.y, HEIGHT - size_number))  # HEIGHT - sprite height + heatlh bar offset
 
 # --- Create fighters ---
 player = Fighter(image_path, 100, 300)
@@ -61,8 +73,8 @@ def rps_result(p1, p2):
 last_hit_time = time.time()
 
 def rps_damage(attacker, defender):
-    """Simple example: attacker always deals 10 damage every second"""
-    defender.health -= 10
+    """Simple example: attacker always deals 1 damage every second"""
+    defender.health -= 1
     if defender.health < 0:
         defender.health = 0
 
@@ -87,6 +99,26 @@ while running:
     # Draw fighters
     player.draw(screen)
     enemy.draw(screen)
+
+    # Player movement
+    keys = pygame.key.get_pressed()
+    dx, dy = 0, 0
+
+    if keys[pygame.K_LEFT]:
+        dx -= player.speed
+    if keys[pygame.K_RIGHT]:
+        dx += player.speed
+    if keys[pygame.K_UP]:
+        dy -= player.speed
+    if keys[pygame.K_DOWN]:
+        dy += player.speed
+
+    player.move(dx, dy)
+
+    # Normalize diagonal movement
+    if dx != 0 and dy != 0:
+        dx /= math.sqrt(2)
+        dy /= math.sqrt(2)
 
     # Win detection
     if player.health <= 0:

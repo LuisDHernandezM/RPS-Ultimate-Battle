@@ -1,5 +1,5 @@
 # Canvas for the character making in the rps game
-# Keeping user's character as drawing
+# Keeping user's character as drawing and importing the image into arena_template.py
 
 import pygame # type: ignore
 import sys
