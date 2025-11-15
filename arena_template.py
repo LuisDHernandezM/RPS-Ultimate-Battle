@@ -3,8 +3,15 @@
 import pygame # type: ignore
 import sys
 import time
-from canvas import classify_image
+from canvas import draw_character
 
+# 1. ---- Launch canvas and get drawing + label ----
+image_path, label = draw_character()
+
+print("You drew:", label)
+print("Image saved as:", image_path)
+
+# 2. ---- Setup Pygame Arena ----
 pygame.init()
 
 # --- Window setup ---
@@ -34,10 +41,9 @@ class Fighter:
         pygame.draw.rect(screen, (255, 0, 0), (self.x, self.y - 20, bar_width, bar_height))
         pygame.draw.rect(screen, (0, 255, 0), (self.x, self.y - 20, fill, bar_height))
 
-label = classify_image("drawing.png")   # returns "rock" or "paper" or "scissors"
-sprite_path = f"sprites/{label}.png"
-
-player = Fighter(sprite_path, 100, 300)
+# --- Create fighters ---
+player = Fighter(image_path, 100, 300)
+# TEMPORARY enemy
 enemy  = Fighter("scissors1.png", 550, 300)
 
 # # --- Example fighters ---
