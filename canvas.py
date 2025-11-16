@@ -31,18 +31,18 @@ def classify_image(path="drawing.png"):
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-brush_size = 8
+brush_size = 15
 last_pos = None
 
 def draw_line(surface, start, end):
     pygame.draw.line(surface, BLACK, start, end, brush_size)
 
 def erase_line(surface, start, end):
-    pygame.draw.line(surface, WHITE, start, end, 20)
+    pygame.draw.line(surface, WHITE, start, end, brush_size * 2)
 
 def draw_character():
     pygame.init()
-    screen = pygame.display.set_mode((500, 500))
+    screen = pygame.display.set_mode((800, 800))
     pygame.display.set_caption("Draw your character")
 
     drawing = False

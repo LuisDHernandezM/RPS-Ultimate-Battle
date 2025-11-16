@@ -5,6 +5,7 @@ import sys
 import time
 from canvas import draw_character
 import math
+from attacks import RockAttack, PaperProjectile, ScissorsCone
 
 # 1. ---- Launch canvas and get drawing + label ----
 image_path, label = draw_character()
@@ -21,6 +22,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("RPS Battle Arena")
 
 clock = pygame.time.Clock()
+# Variable for sprite size
 size_number = 75
 size = (size_number, size_number)
 
@@ -56,10 +58,7 @@ class Fighter:
 # --- Create fighters ---
 player = Fighter(image_path, 100, 300)
 # TEMPORARY enemy
-enemy  = Fighter("scissors1.png", 550, 300)
-
-# # --- Example fighters ---
-# player = Fighter("rock1.png", 100, 300)       # ← replace your own images
+enemy  = Fighter("scissors1.png", 700, 300)
 
 # Rules for RPS
 def rps_result(p1, p2):
@@ -82,6 +81,7 @@ def rps_damage(attacker, defender):
 running = True
 while running:
     clock.tick(60)
+    attacks = []
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -120,12 +120,37 @@ while running:
         dx /= math.sqrt(2)
         dy /= math.sqrt(2)
 
+    # Handle attacks
+    if keys[pygame.K_SPACE]:
+        # test prints
+        # print("Attack!")
+        if label == "rock":
+            attacks.append(RockAttack(player))
+        elif label == "paper":
+            mx, my = pygame.mouse.get_pos()
+            attacks.append(PaperProjectile(player.x+75, player.y+75, mx, my))
+        elif label == "scissors":
+            mx, my = pygame.mouse.get_pos()
+            attacks.append(ScissorsCone(player, (mx, my)))
+    
+    # Update and draw attacks
+    for attack in attacks[:]:  # copy to safely remove
+        attack.update()
+        attack.draw(screen)
+        if not attack.active:
+            attacks.remove(attack)
+
+
     # Win detection
     if player.health <= 0:
         print("Enemy wins!")
         running = False
     if enemy.health <= 0:
         print("Player wins!")
+        running = False
+    
+    # QUIT on ESCAPE
+    if keys[pygame.K_ESCAPE]:
         running = False
 
     pygame.display.flip()
