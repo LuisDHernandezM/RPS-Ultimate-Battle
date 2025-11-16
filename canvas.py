@@ -31,14 +31,24 @@ def classify_image(path="drawing.png"):
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+MAGENTA = (255, 0, 255) 
+CYAN = (0, 255, 255)
+GRAY = (200, 200, 200)
+
+WINDOW_COLOR = GRAY
+
 brush_size = 15
 last_pos = None
 
-def draw_line(surface, start, end):
-    pygame.draw.line(surface, BLACK, start, end, brush_size)
+def draw_line(surface, current_color, start, end):
+    pygame.draw.line(surface, current_color, start, end, brush_size)
 
 def erase_line(surface, start, end):
-    pygame.draw.line(surface, WHITE, start, end, brush_size * 2)
+    pygame.draw.line(surface, WINDOW_COLOR, start, end, brush_size * 2.5)
 
 def draw_character():
     pygame.init()
@@ -49,8 +59,10 @@ def draw_character():
     erasing = False
     clock = pygame.time.Clock()
 
-    # White canvas
-    screen.fill((WHITE))
+    # Set Window background color
+    screen.fill((WINDOW_COLOR))
+
+    current_color = BLACK # default color
 
     running = True
     while running:
@@ -59,6 +71,25 @@ def draw_character():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+            # change color with keys
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    current_color = (RED)   # red
+                elif event.key == pygame.K_b:
+                    current_color = (BLUE)   # blue
+                elif event.key == pygame.K_w:
+                    current_color = (WHITE) # white
+                elif event.key == pygame.K_k:
+                    current_color = (BLACK)     # black
+                elif event.key == pygame.K_g:
+                    current_color = (GRAY)
+                elif event.key == pygame.K_y:
+                    current_color = (YELLOW)
+                elif event.key == pygame.K_m:
+                    current_color = (MAGENTA)
+                elif event.key == pygame.K_l:
+                    current_color = (CYAN)
 
             # Start drawing
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -86,7 +117,7 @@ def draw_character():
 
                 # Clear screen (C)
                 if event.key == pygame.K_c:
-                    screen.fill(WHITE)  # clear screen
+                    screen.fill(WINDOW_COLOR)  # clear screen
 
                 # Save and classify drawing (S) fro checking correctness of users input
                 if event.key == pygame.K_s:
@@ -103,12 +134,16 @@ def draw_character():
                     
                     pygame.quit()
                     return "player_drawing.png", label
+                
+                # Exit without saving (ESCAPE)
+                if event.key == pygame.K_ESCAPE:
+                    running = False
 
             # Continue drawing while mouse moves
         if drawing:
             mouse_pos = pygame.mouse.get_pos()
             if last_pos is not None:
-                draw_line(screen, last_pos, mouse_pos)
+                draw_line(screen, current_color, last_pos, mouse_pos)
             last_pos = mouse_pos
         if erasing:
             mouse_pos = pygame.mouse.get_pos()
@@ -119,6 +154,7 @@ def draw_character():
         pygame.display.update()
 
     pygame.quit()
+    sys.exit() # if window closed unexpectedly
     return None, None  # if window closed
 
 # decition stored in player_choice variable
