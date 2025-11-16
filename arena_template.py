@@ -10,8 +10,10 @@ from attacks import RockAttack, PaperProjectile, ScissorsCone
 # 1. ---- Launch canvas and get drawing + label ----
 image_path, label = draw_character()
 
-print("You drew:", label)
-print("Image saved as:", image_path)
+# ====== TEMPORARY bypassing canvas for testing ======
+# label = "paper" # TEMPORARY for testing without canvas
+# print("You drew:", label)
+# print("Image saved as:", image_path) 
 
 # 2. ---- Setup Pygame Arena ----
 pygame.init()
@@ -35,6 +37,16 @@ class Fighter:
         self.y = y
         self.health = 100
         self.speed = 5 # movement speed in pixels per frame
+
+        # cooldowns for each attack type
+        self.cooldowns = {
+            "rock": 2, # seconds
+            "paper": 1.25, 
+            "scissors": 1.5 
+        }
+        self.last_attack_time = 0
+        self.attack_cooldown = 0.7  # default cooldown
+        self.label = label  # "rock", "paper", or "scissors"
     
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
@@ -54,34 +66,50 @@ class Fighter:
         # Keep inside the screen
         self.x = max(0, min(self.x, WIDTH - size_number))  # WIDTH - sprite width
         self.y = max(20, min(self.y, HEIGHT - size_number))  # HEIGHT - sprite height + heatlh bar offset
+    
+    def can_attack(self):
+        cd = self.cooldowns[self.label]        # choose correct cooldown
+        return (time.time() - self.last_attack_time) >= cd
+
+    def trigger_attack(self):
+        self.last_attack_time = time.time()
+    
 
 # --- Create fighters ---
-player = Fighter(image_path, 100, 300)
+player = Fighter("player_drawing.png", 100, 300)
 # TEMPORARY enemy
 enemy  = Fighter("scissors1.png", 700, 300)
 
 # Rules for RPS
 def rps_result(p1, p2):
-    if p1 == p2: return 0
+    if p1 == p2: return 0 # tie
+    # p1 wins cases
     if p1 == "rock"     and p2 == "scissors": return 1
     if p1 == "scissors" and p2 == "paper":    return 1
     if p1 == "paper"    and p2 == "rock":     return 1
-    return -1
+    # p2 wins cases
+    if p1 == "rock"     and p2 == "paper": return -1
+    if p1 == "scissors" and p2 == "rock":    return -1
+    if p1 == "paper"    and p2 == "scissors": return -1
+
+    return KeyError("Invalid RPS inputs")
 
 # --- Battle logic example ---
 last_hit_time = time.time()
 
 def rps_damage(attacker, defender):
     """Simple example: attacker always deals 1 damage every second"""
-    defender.health -= 1
+    defender.health -= 0.75
     if defender.health < 0:
         defender.health = 0
+
+# List to hold active attacks
+attacks = []
 
 # --- Game Loop ---
 running = True
 while running:
     clock.tick(60)
-    attacks = []
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -121,23 +149,65 @@ while running:
         dy /= math.sqrt(2)
 
     # Handle attacks
-    if keys[pygame.K_SPACE]:
-        # test prints
-        # print("Attack!")
+    if keys[pygame.K_SPACE] and player.can_attack():
+        player.trigger_attack()
+
         if label == "rock":
             attacks.append(RockAttack(player))
+
         elif label == "paper":
             mx, my = pygame.mouse.get_pos()
             attacks.append(PaperProjectile(player.x+75, player.y+75, mx, my))
+
         elif label == "scissors":
             mx, my = pygame.mouse.get_pos()
             attacks.append(ScissorsCone(player, (mx, my)))
-    
+
+     
     # Update and draw attacks
-    for attack in attacks[:]:  # copy to safely remove
+    for attack in attacks[:]:                  # iterate over a shallow copy
         attack.update()
-        attack.draw(screen)
-        if not attack.active:
+        # collision detection per attack - only once per frame
+        if attack.check_collision(enemy):
+            if isinstance(attack, RockAttack):
+                if rps_result("rock", enemy.label) == 1:
+                    enemy.health -= 15
+                    attack.active = False
+                elif rps_result("rock", enemy.label) == -1:
+                    enemy.health -= 5
+                    attack.active = False
+                else:
+                    enemy.health -= 10
+                    attack.active = False
+            elif isinstance(attack, PaperProjectile):
+                if rps_result("paper", enemy.label) == 1:
+                    enemy.health -= 12
+                    print("Paper dealt -12!")
+                    print("Enemy type:", enemy.label)
+                    attack.active = False
+                elif rps_result("paper", enemy.label) == -1:
+                    enemy.health -= 4
+                    print("Paper dealt -4!")
+                    print("Enemy type:", enemy.label)
+                    attack.active = False
+                else:
+                    enemy.health -= 8
+                    print("Paper dealt -8!")
+                    print("Enemy type:", enemy.label)
+                    attack.active = False
+            elif isinstance(attack, ScissorsCone):
+                if rps_result("scissors", enemy.label) == 1:
+                    enemy.health -= 18
+                    attack.active = False
+                elif rps_result("scissors", enemy.label) == -1:
+                    enemy.health -= 6
+                    attack.active = False
+                else:
+                    enemy.health -= 10
+                    attack.active = False
+        if attack.active:
+            attack.draw(screen)
+        else:
             attacks.remove(attack)
 
 

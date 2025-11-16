@@ -3,12 +3,15 @@
 import pygame # type: ignore
 import math
 
+WIDTH, HEIGHT = 1400, 800
+size_number = 75
+
 class Attack:
     def __init__(self, x, y):
         self.x = x - (75 // 2)
         self.y = y - (75 // 2)
         self.active = True
-    
+        
     # Updating attacks position, lifetime, etc.
     def update(self):
         pass
@@ -27,7 +30,7 @@ class Attack:
 class RockAttack(Attack):
     def __init__(self, player):
         super().__init__(player.x + 75, player.y + 75)
-        self.radius = 400 # How far it reaches
+        self.radius = 100 # How far it reaches
         self.duration = 15 # How long it stays (15 frames → ~0.25s if 60 FPS).
         self.frame = 0
 
@@ -46,48 +49,84 @@ class RockAttack(Attack):
         ty = target.y + 75
         dist = math.hypot(tx - self.x, ty - self.y)
         return dist <= self.radius + 75
-    
+
 
 # ============================ Paper Attack ============================
 
 # Projectile shoots toward the mouse when created. Bounces off walls up to 2 times.
 class PaperProjectile(Attack):
-    def __init__(self, x, y, target_x, target_y):
+    def __init__(self, x, y, target_x, target_y, speed=12, radius=8, max_bounces=2):
+        # x,y should be center of spawn (floats)
         super().__init__(x, y)
-        angle = math.atan2(target_y - y, target_x - x)
+        # compute normalized direction toward target
+        dx = float(target_x) - self.x
+        dy = float(target_y) - self.y
+        dist = math.hypot(dx, dy)
+        if dist == 0:
+            # fallback direction if mouse exactly on spawn
+            dx, dy = 1.0, 0.0
+            dist = 1.0
+        self.vx = (dx / dist) * speed
+        self.vy = (dy / dist) * speed
 
-        # Velocity vectors
-        speed = 10
-        self.vx = speed * math.cos(angle)
-        self.vy = speed * math.sin(angle)
+        self.radius = radius
+        self.bounces = 0
+        self.max_bounces = max_bounces
 
-        self.radius = 40 # Size of the projectile
-        self.bounces = 0 # Number of bounces so far
-        self.max_bounces = 2 # Max bounces allowed
+        # small cooldown so bounce logic can't trigger immediately on spawn
+        self._just_spawned_frames = 2
 
-    # Update position and handle bouncing
+        # debugging
+        # print(f"[PaperProjectile] spawn ({self.x:.1f},{self.y:.1f}) -> target ({target_x},{target_y}) vx={self.vx:.2f}, vy={self.vy:.2f}")
+
     def update(self):
+        # move
         self.x += self.vx
         self.y += self.vy
-        if self.x <= 0 or self.x >= 800 - self.radius:
+
+        # reduce spawn grace frames
+        if self._just_spawned_frames > 0:
+            self._just_spawned_frames -= 1
+
+        # bounce if hitting walls (consider radius)
+        bounced = False
+        if self.x - self.radius <= 0 and self.vx < 0:
+            self.x = self.radius + 1
             self.vx *= -1
-            self.bounces += 1
-        if self.y <= 0 or self.y >= 600 - self.radius:
+            bounced = True
+        elif self.x + self.radius >= WIDTH and self.vx > 0:
+            self.x = WIDTH - self.radius - 1
+            self.vx *= -1
+            bounced = True
+
+        if self.y - self.radius <= 0 and self.vy < 0:
+            self.y = self.radius + 1
             self.vy *= -1
+            bounced = True
+        elif self.y + self.radius >= HEIGHT and self.vy > 0:
+            self.y = HEIGHT - self.radius - 1
+            self.vy *= -1
+            bounced = True
+
+        if bounced and self._just_spawned_frames <= 0:
             self.bounces += 1
+
         if self.bounces > self.max_bounces:
             self.active = False
 
-    # Draw the projectile as a yellow circle
     def draw(self, screen):
-        pygame.draw.circle(screen, (255, 255, 0), (int(self.x), int(self.y)), self.radius)
+        # convert position to ints for drawing
+        pygame.draw.circle(screen, (255, 215, 0), (int(self.x), int(self.y)), self.radius)
+        # optional: draw velocity vector for debugging
+        # end_x = int(self.x + self.vx*2)
+        # end_y = int(self.y + self.vy*2)
+        # pygame.draw.line(screen, (255,0,0), (int(self.x),int(self.y)), (end_x,end_y), 2)
 
-    # Check collision with target
     def check_collision(self, target):
-        tx = target.x + 75
-        ty = target.y + 75
+        tx = target.x + size_number/2
+        ty = target.y + size_number/2
         dist = math.hypot(tx - self.x, ty - self.y)
-        return dist <= self.radius + 75
+        return dist <= (self.radius + max(size_number, size_number)/2)
 
 
 # ============================ Scissors Attack ============================
