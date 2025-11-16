@@ -6,6 +6,9 @@ import math
 WIDTH, HEIGHT = 1400, 800
 size_number = 75
 
+
+# ============================ Base Attack Class ============================
+
 class Attack:
     def __init__(self, x, y):
         self.x = x - (75 // 2)
@@ -24,7 +27,9 @@ class Attack:
     def check_collision(self, target):
         pass
 
+
 # ============================ Rock Attack ============================
+
 
 # Appears around the player, damaging anyone in range
 class RockAttack(Attack):
@@ -51,7 +56,9 @@ class RockAttack(Attack):
         return dist <= self.radius + 75
 
 
+
 # ============================ Paper Attack ============================
+
 
 # Projectile shoots toward the mouse when created. Bounces off walls up to 2 times.
 class PaperProjectile(Attack):
@@ -129,7 +136,9 @@ class PaperProjectile(Attack):
         return dist <= (self.radius + max(size_number, size_number)/2)
 
 
+
 # ============================ Scissors Attack ============================
+
 
 # Draws a triangle (cone) in the direction of the mouse. Damages anyone in the cone area.
 class ScissorsCone(Attack):

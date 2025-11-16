@@ -64,6 +64,7 @@ def draw_character():
 
     current_color = BLACK # default color
 
+# ----------------------------------- Canvas loop -----------------------------------
     running = True
     while running:
         clock.tick(60)

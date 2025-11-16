@@ -106,7 +106,7 @@ def rps_damage(attacker, defender):
 # List to hold active attacks
 attacks = []
 
-# --- Game Loop ---
+# -------------------------- Game Loop ------------------------------------
 running = True
 while running:
     clock.tick(60)
