@@ -36,7 +36,7 @@ class Fighter:
         self.x = x
         self.y = y
         self.health = 100
-        self.speed = 5 # movement speed in pixels per frame
+        self.speed = 4 # movement speed in pixels per frame
 
         # cooldowns for each attack type
         self.cooldowns = {
