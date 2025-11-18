@@ -9,10 +9,11 @@ from attacks import RockAttack, PaperProjectile, ScissorsCone
 
 # 1. ---- Launch canvas and get drawing + label ----
 image_path, label = draw_character()
+print("You drew:", label)
 
 # ====== TEMPORARY bypassing canvas for testing ======
-# label = "paper" # TEMPORARY for testing without canvas
-# print("You drew:", label)
+label = "paper" # TEMPORARY for testing without canvas
+print("You drew:", label)
 # print("Image saved as:", image_path) 
 
 # 2. ---- Setup Pygame Arena ----
@@ -79,6 +80,7 @@ class Fighter:
 player = Fighter("player_drawing.png", 100, 300)
 # TEMPORARY enemy
 enemy  = Fighter("scissors1.png", 700, 300)
+enemy.label = "scissors"  # TEMPORARY enemy label
 
 # Rules for RPS
 def rps_result(p1, p2):
@@ -167,7 +169,7 @@ while running:
     # Update and draw attacks
     for attack in attacks[:]:                  # iterate over a shallow copy
         attack.update()
-        # collision detection per attack - only once per frame
+        # collision detection per attack - only once per attack
         if attack.check_collision(enemy) and not attack.has_hit:
             if isinstance(attack, RockAttack):
                 if rps_result("rock", enemy.label) == 1:
@@ -185,16 +187,19 @@ while running:
                     print("Paper dealt -12!")
                     print("Enemy type:", enemy.label)
                     attack.has_hit = True
+                    attack.active = False  # deactivate projectile on hit
                 elif rps_result("paper", enemy.label) == -1:
                     enemy.health -= 4
                     print("Paper dealt -4!")
                     print("Enemy type:", enemy.label)
                     attack.has_hit = True
+                    attack.active = False
                 else:
                     enemy.health -= 8
                     print("Paper dealt -8!")
                     print("Enemy type:", enemy.label)
                     attack.has_hit = True
+                    attack.active = False
             elif isinstance(attack, ScissorsCone):
                 if rps_result("scissors", enemy.label) == 1:
                     enemy.health -= 18
