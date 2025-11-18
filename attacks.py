@@ -14,6 +14,7 @@ class Attack:
         self.x = x - (75 // 2)
         self.y = y - (75 // 2)
         self.active = True
+        self.has_hit = False
         
     # Updating attacks position, lifetime, etc.
     def update(self):
@@ -36,7 +37,7 @@ class RockAttack(Attack):
     def __init__(self, player):
         super().__init__(player.x + 75, player.y + 75)
         self.radius = 100 # How far it reaches
-        self.duration = 15 # How long it stays (15 frames → ~0.25s if 60 FPS).
+        self.duration = 30 # How long it stays (15 frames → ~0.25s if 60 FPS).
         self.frame = 0
 
     def update(self):

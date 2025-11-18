@@ -168,43 +168,43 @@ while running:
     for attack in attacks[:]:                  # iterate over a shallow copy
         attack.update()
         # collision detection per attack - only once per frame
-        if attack.check_collision(enemy):
+        if attack.check_collision(enemy) and not attack.has_hit:
             if isinstance(attack, RockAttack):
                 if rps_result("rock", enemy.label) == 1:
                     enemy.health -= 15
-                    attack.active = False
+                    attack.has_hit = True
                 elif rps_result("rock", enemy.label) == -1:
                     enemy.health -= 5
-                    attack.active = False
+                    attack.has_hit = True
                 else:
                     enemy.health -= 10
-                    attack.active = False
+                    attack.has_hit = True
             elif isinstance(attack, PaperProjectile):
                 if rps_result("paper", enemy.label) == 1:
                     enemy.health -= 12
                     print("Paper dealt -12!")
                     print("Enemy type:", enemy.label)
-                    attack.active = False
+                    attack.has_hit = True
                 elif rps_result("paper", enemy.label) == -1:
                     enemy.health -= 4
                     print("Paper dealt -4!")
                     print("Enemy type:", enemy.label)
-                    attack.active = False
+                    attack.has_hit = True
                 else:
                     enemy.health -= 8
                     print("Paper dealt -8!")
                     print("Enemy type:", enemy.label)
-                    attack.active = False
+                    attack.has_hit = True
             elif isinstance(attack, ScissorsCone):
                 if rps_result("scissors", enemy.label) == 1:
                     enemy.health -= 18
-                    attack.active = False
+                    attack.has_hit = True
                 elif rps_result("scissors", enemy.label) == -1:
                     enemy.health -= 6
-                    attack.active = False
+                    attack.has_hit = True
                 else:
                     enemy.health -= 10
-                    attack.active = False
+                    attack.has_hit = True
         if attack.active:
             attack.draw(screen)
         else:
