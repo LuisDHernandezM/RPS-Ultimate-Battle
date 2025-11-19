@@ -9,6 +9,9 @@ import torch # type: ignore
 import numpy as np
 from preprocess import preprocess_image
 
+
+# ------------------------------ Load Classifier -------------------------------
+
 classes = ['paper', 'rock', 'scissors']
 
 # Load PyTorch model
@@ -29,7 +32,12 @@ def classify_image(path="drawing.png"):
 
     return classes[prediction]
 
+
+
 # --------------------------------- Drawing Canvas ----------------------------------
+
+
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -51,6 +59,10 @@ def draw_line(surface, current_color, start, end):
 def erase_line(surface, start, end):
     pygame.draw.line(surface, WINDOW_COLOR, start, end, brush_size * 2.5)
 
+
+# ----------------------------------- Canvas loop -----------------------------------
+
+
 def draw_character():
     pygame.init()
     screen = pygame.display.set_mode((800, 800))
@@ -65,7 +77,6 @@ def draw_character():
 
     current_color = BLACK # default color
 
-# ----------------------------------- Canvas loop -----------------------------------
     running = True
     while running:
         clock.tick(60)
@@ -159,4 +170,8 @@ def draw_character():
     sys.exit() # if window closed unexpectedly
     return None, None  # if window closed
 
-# decition stored in player_choice variable
+# ----------------------------------- End of Canvas -----------------------------------
+
+# for testing canvas.py without game integration
+if __name__ == "__main__":
+    draw_character()

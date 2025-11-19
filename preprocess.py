@@ -28,4 +28,11 @@ def preprocess_image(path):
     # Add channel dimension for CNN
     img = img.reshape(64, 64, 1)
 
+    
+    # Debugging outputs
+    cv2.imwrite("debug_raw.png", cv2.imread(path))
+    cv2.imwrite("debug_thresh.png", img)
+    cv2.imwrite("debug_crop.png", img[y:y+h, x:x+w])
+    cv2.imwrite("debug_final64.png", cv2.resize(img, (64,64)))
+
     return img

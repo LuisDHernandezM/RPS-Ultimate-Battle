@@ -11,6 +11,8 @@ from preprocess import preprocess_image
 # Classes
 classes = ["rock", "paper", "scissors"]
 
+# ================================ Classes definitions ==================================
+
 # Custom dataset class
 class RPSDataset(Dataset):
     def __init__(self, data_dir):
@@ -21,8 +23,8 @@ class RPSDataset(Dataset):
             for fname in os.listdir(folder):
                 if fname.endswith(".png"):
                     path = os.path.join(folder, fname)
-                    img = preprocess_image(path)   # shape: (64, 64, 1)
-                    img = np.transpose(img, (2, 0, 1))  # to (1, 64, 64)
+                    img = preprocess_image(path)   # shape: (64, 64, 1) # preprocess_image from preprocess.py
+                    img = np.transpose(img, (2, 0, 1))  # to (1, 64, 64) for PyTorch
                     self.images.append(img)
                     self.labels.append(idx)
 
@@ -52,13 +54,16 @@ class RPScnn(nn.Module):
     def forward(self, x):
         return self.net(x)
 
+
+# ================================ Training ==================================
+
 # Load data
 dataset = RPSDataset("data/")
 loader = DataLoader(dataset, batch_size=8, shuffle=True)
 
 # Model, loss, optimizer
-model = RPScnn()
-criterion = nn.CrossEntropyLoss()
+model = RPScnn() 
+criterion = nn.CrossEntropyLoss() 
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # Training loop
@@ -71,6 +76,6 @@ for epoch in range(15):
         optimizer.step()
     print(f"Epoch {epoch+1}/15, Loss: {loss.item():.4f}")
 
-# Save model
-torch.save(model.state_dict(), "rps_model.pt")
+# Save model 
+torch.save(model.state_dict(), "rps_model.pt") 
 print("Saved model: rps_model.pt")
