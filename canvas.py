@@ -9,27 +9,38 @@ import torch # type: ignore
 import numpy as np
 from preprocess import preprocess_image
 
+# Load PyTorch model
+from train_classifier_pytorch import RPScnn
 
 # ------------------------------ Load Classifier -------------------------------
 
 classes = ['paper', 'rock', 'scissors']
 
-# Load PyTorch model
-from train_classifier_pytorch import RPScnn
-
-model = RPScnn()
-model.load_state_dict(torch.load("rps_model.pt", weights_only=True))
-model.eval()
+model = RPScnn(in_channels=1)
+model_path = "rps_model.pt"
+try:
+    state = torch.load(model_path, map_location="cpu")
+    model.load_state_dict(state)
+    model.eval()
+    model_loaded = True
+    print("Loaded model from", model_path)
+except FileNotFoundError:
+    print("Warning: model file not found:", model_path)
+    model_loaded = False
 
 def classify_image(path="drawing.png"):
-    img = preprocess_image(path)  # (64,64,1)
-    img = np.transpose(img, (2,0,1))  # (1,64,64)
+    if not model_loaded:
+        return "unknown"
+    img = preprocess_image(path, size=64, save_debug=True)  # (64,64,1)
+    img = np.transpose(img, (2, 0, 1))  # (1,64,64)
     img = torch.tensor(img, dtype=torch.float32).unsqueeze(0)  # (1,1,64,64)
 
     with torch.no_grad():
         output = model(img)
-        prediction = torch.argmax(output, dim=1).item()
-
+        probs = torch.softmax(output, dim=1).cpu().numpy()[0]
+        prediction = int(np.argmax(probs))
+    # optional: print probabilities
+    print("Prediction probs:", {classes[i]: float(probs[i]) for i in range(len(classes))})
     return classes[prediction]
 
 
@@ -104,15 +115,12 @@ def draw_character():
                 elif event.key == pygame.K_l:
                     current_color = (CYAN)
 
-            # Start drawing
+            # Start drawing / erasing 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:   # left mouse button
                     drawing = True
                     last_pos = event.pos
-            
-            # Start erasing
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 3:   # right mouse button
+                elif event.button == 3:   # right mouse button
                     erasing = True
                     last_pos = event.pos
 
@@ -144,7 +152,7 @@ def draw_character():
 
                     # run classifier
                     label = classify_image("player_drawing.png")  
-                    
+                    print("You Drew:", label)
                     pygame.quit()
                     return "player_drawing.png", label
                 
