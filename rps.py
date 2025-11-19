@@ -5,7 +5,7 @@ import random
 def get_computer_choice():
     choices = ['rock', 'paper', 'scissors']
     return random.choice(choices)
-
+    
 def determine_winner(user_choice, computer_choice):
     if user_choice == computer_choice:
         return 'tie'

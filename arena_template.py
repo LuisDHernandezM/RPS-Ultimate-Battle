@@ -20,7 +20,7 @@ print("You drew:", label)
 pygame.init()
 
 # --- Window setup ---
-WIDTH, HEIGHT = 1400, 800
+WIDTH, HEIGHT = 1500, 800
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("RPS Battle Arena")
 
@@ -105,7 +105,7 @@ def rps_damage(attacker, defender):
     if defender.health < 0:
         defender.health = 0
 
-# List to hold active attacks
+# List to hold active attacks in the game
 attacks = []
 
 # -------------------------- Game Loop ------------------------------------
@@ -134,13 +134,13 @@ while running:
     keys = pygame.key.get_pressed()
     dx, dy = 0, 0
 
-    if keys[pygame.K_LEFT]:
+    if keys[pygame.K_a]:
         dx -= player.speed
-    if keys[pygame.K_RIGHT]:
+    if keys[pygame.K_d]:
         dx += player.speed
-    if keys[pygame.K_UP]:
+    if keys[pygame.K_w]:
         dy -= player.speed
-    if keys[pygame.K_DOWN]:
+    if keys[pygame.K_s]:
         dy += player.speed
 
     player.move(dx, dy)
@@ -184,20 +184,20 @@ while running:
             elif isinstance(attack, PaperProjectile):
                 if rps_result("paper", enemy.label) == 1:
                     enemy.health -= 12
-                    print("Paper dealt -12!")
-                    print("Enemy type:", enemy.label)
+                    # print("Paper dealt -12!")
+                    # print("Enemy type:", enemy.label)
                     attack.has_hit = True
                     attack.active = False  # deactivate projectile on hit
                 elif rps_result("paper", enemy.label) == -1:
                     enemy.health -= 4
-                    print("Paper dealt -4!")
-                    print("Enemy type:", enemy.label)
+                    # print("Paper dealt -4!")
+                    # print("Enemy type:", enemy.label)
                     attack.has_hit = True
                     attack.active = False
                 else:
                     enemy.health -= 8
-                    print("Paper dealt -8!")
-                    print("Enemy type:", enemy.label)
+                    # print("Paper dealt -8!")
+                    # print("Enemy type:", enemy.label)
                     attack.has_hit = True
                     attack.active = False
             elif isinstance(attack, ScissorsCone):

@@ -3,7 +3,7 @@
 import pygame # type: ignore
 import math
 
-WIDTH, HEIGHT = 1400, 800
+WIDTH, HEIGHT = 1500, 800
 size_number = 75
 
 
@@ -133,7 +133,7 @@ class PaperProjectile(Attack):
     def check_collision(self, target):
         tx = target.x + size_number/2
         ty = target.y + size_number/2
-        dist = math.hypot(tx - self.x, ty - self.y)
+        dist = math.hypot(tx - self.x, ty - self.y) # distance between centers
         return dist <= (self.radius + max(size_number, size_number)/2)
 
 
