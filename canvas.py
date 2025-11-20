@@ -11,10 +11,9 @@ from preprocess import preprocess_image
 
 # Load PyTorch model
 from train_classifier_pytorch import RPScnn
+from train_classifier_pytorch import classes
 
 # ------------------------------ Load Classifier -------------------------------
-
-classes = ['paper', 'rock', 'scissors']
 
 model = RPScnn(in_channels=1)
 model_path = "rps_model.pt"
