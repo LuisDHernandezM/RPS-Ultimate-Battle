@@ -49,6 +49,8 @@ def ai_move_behavior(enemy, player):
         if dist > IDEAL_CLOSE:
             enemy.x += speed * (dx / dist)
             enemy.y += speed * (dy / dist)
+        if dist == 0:
+            enemy.x += speed
         else:
             # circle around the player so it doesn't flicker
             enemy.x += speed * (-dy / dist)
@@ -62,6 +64,8 @@ def ai_move_behavior(enemy, player):
             # move AWAY from player
             enemy.x -= speed * (dx / dist)
             enemy.y -= speed * (dy / dist)
+        if dist == 0:
+            enemy.x += speed
         else:
             # strafe to avoid projectiles
             enemy.x += speed * (dy / dist)
@@ -74,6 +78,8 @@ def ai_move_behavior(enemy, player):
         if dist > 250:
             enemy.x += speed * (dx / dist)
             enemy.y += speed * (dy / dist)
+        if dist == 0:
+            enemy.x += speed
         else:
             enemy.x += speed * (-dy / dist)
             enemy.y += speed * (dx / dist)

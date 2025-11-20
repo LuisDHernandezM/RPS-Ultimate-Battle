@@ -2,6 +2,7 @@
 
 import pygame # type: ignore
 import math
+import time
 
 WIDTH, HEIGHT = 1500, 800
 size_number = 75
@@ -15,6 +16,7 @@ class Attack:
         self.y = y - (75 // 2)
         self.active = True
         self.has_hit = False
+        self.owner = None  # to be set when created
         
     # Updating attacks position, lifetime, etc.
     def update(self):
@@ -83,6 +85,9 @@ class PaperProjectile(Attack):
 
         # small cooldown so bounce logic can't trigger immediately on spawn
         self._just_spawned_frames = 2
+        self._just_spawned_time = time.time()  # store spawn time
+        self.grace_period = 1  # 1 seconds immunity for owner
+        
 
         # debugging
         # print(f"[PaperProjectile] spawn ({self.x:.1f},{self.y:.1f}) -> target ({target_x},{target_y}) vx={self.vx:.2f}, vy={self.vy:.2f}")
@@ -131,10 +136,13 @@ class PaperProjectile(Attack):
         # pygame.draw.line(screen, (255,0,0), (int(self.x),int(self.y)), (end_x,end_y), 2)
 
     def check_collision(self, target):
+        # ignore collisions with owner during grace period
+        if target == self.owner and time.time() - self._just_spawned_time < self.grace_period:
+            return False
         tx = target.x + size_number/2
         ty = target.y + size_number/2
         dist = math.hypot(tx - self.x, ty - self.y) # distance between centers
-        return dist <= (self.radius + max(size_number, size_number)/2)
+        return dist <= (self.radius + max(size_number, size_number)/2) # collision check
 
 
 

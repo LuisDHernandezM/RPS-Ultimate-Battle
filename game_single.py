@@ -68,7 +68,7 @@ class Fighter:
 player = Fighter(image_path, 100, 300)
 player.label = label  # Player label from drawing
 # TEMPORARY enemy
-enemy  = Fighter("scissors1.png", 700, 300)
+enemy  = Fighter("AI_scissors1.png", 700, 300)
 enemy.label = "scissors"  # TEMPORARY enemy label
 
 
@@ -134,7 +134,6 @@ while running:
 
         elif label == "paper":
             mx, my = pygame.mouse.get_pos()
-            print("Player is trying to shoot paper at:", mx, my)  # <-- debug
             attacks.append(PaperProjectile(player.x+75, player.y+75, mx, my))
 
         elif label == "scissors":
