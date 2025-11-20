@@ -143,7 +143,7 @@ def draw_character():
                 if event.key == pygame.K_s:
                     pygame.image.save(screen, "player_drawing.png")
                     result = classify_image("player_drawing.png")
-                    print("You drew:", result)
+                    print("Your drawing was saved as character:", result)
 
                 # Finish drawing and exit (ENTER)
                 if event.key == pygame.K_RETURN:
@@ -151,7 +151,7 @@ def draw_character():
 
                     # run classifier
                     label = classify_image("player_drawing.png")  
-                    print("You Drew:", label)
+                    # print("You Drew:", label)
                     pygame.quit()
                     return "player_drawing.png", label
                 
