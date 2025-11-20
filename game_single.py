@@ -6,9 +6,7 @@ import math
 from canvas import draw_character
 from attacks import RockAttack, PaperProjectile, ScissorsCone
 from arena_template import *
-import os
-from PIL import Image  # pillow
-import cv2  # type: ignore
+from ai_settings import ai_move_behavior, ai_should_attack, ai_trigger_attack
 
 
 # 1. ---- Launch canvas and get drawing + label ----
@@ -101,6 +99,12 @@ while running:
     player.draw(screen)
     enemy.draw(screen)
 
+    # AI movement
+    ai_move_behavior(enemy, player)
+
+    if ai_should_attack(enemy, player) and enemy.can_attack():
+        ai_trigger_attack(enemy, player, attacks)
+
     # Player movement
     keys = pygame.key.get_pressed()
     dx, dy = 0, 0
@@ -130,6 +134,7 @@ while running:
 
         elif label == "paper":
             mx, my = pygame.mouse.get_pos()
+            print("Player is trying to shoot paper at:", mx, my)  # <-- debug
             attacks.append(PaperProjectile(player.x+75, player.y+75, mx, my))
 
         elif label == "scissors":
@@ -141,7 +146,7 @@ while running:
     for attack in attacks[:]:                  # iterate over a shallow copy
         attack.update()
         # collision detection per attack - only once per attack
-        if attack.check_collision(enemy) and not attack.has_hit:
+        if attack.check_collision(enemy) and not attack.has_hit: # AI enemy hit
             if isinstance(attack, RockAttack):
                 if rps_result("rock", enemy.label) == 1:
                     enemy.health -= 15
@@ -180,6 +185,40 @@ while running:
                     attack.has_hit = True
                 else:
                     enemy.health -= 10
+                    attack.has_hit = True
+        elif attack.check_collision(player) and not attack.has_hit: # player takes damage
+            if isinstance(attack, RockAttack):
+                if rps_result("rock", player.label) == 1:
+                    player.health -= 15
+                    attack.has_hit = True
+                elif rps_result("rock", player.label) == -1:
+                    player.health -= 5
+                    attack.has_hit = True
+                else:
+                    player.health -= 10
+                    attack.has_hit = True
+            elif isinstance(attack, PaperProjectile):
+                if rps_result("paper", player.label) == 1:
+                    player.health -= 12
+                    attack.has_hit = True
+                    attack.active = False
+                elif rps_result("paper", player.label) == -1:
+                    player.health -= 4
+                    attack.has_hit = True
+                    attack.active = False
+                else:
+                    player.health -= 8
+                    attack.has_hit = True
+                    attack.active = False
+            elif isinstance(attack, ScissorsCone):
+                if rps_result("scissors", player.label) == 1:
+                    player.health -= 18
+                    attack.has_hit = True
+                elif rps_result("scissors", player.label) == -1:
+                    player.health -= 6
+                    attack.has_hit = True
+                else:
+                    player.health -= 10
                     attack.has_hit = True
         if attack.active:
             attack.draw(screen)
