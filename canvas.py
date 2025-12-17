@@ -69,7 +69,7 @@ def draw_line(surface, current_color, start, end):
     pygame.draw.line(surface, current_color, start, end, brush_size)
 
 def erase_line(surface, start, end):
-    pygame.draw.line(surface, WINDOW_COLOR, start, end, brush_size * 2.5)
+    pygame.draw.line(surface, WINDOW_COLOR, start, end, brush_size * 3)
 
 
 # ----------------------------------- Canvas loop -----------------------------------
