@@ -1,4 +1,7 @@
+# Wrote by Luis D. Hernandez with assistance from ChatGPT and GenAI
+# Date: December 2025
 # Game loop for multiplyer mode
+
 from canvas import draw_character
 from arena_template import *
 from ai_settings import *

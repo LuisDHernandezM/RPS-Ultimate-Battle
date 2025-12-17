@@ -1,3 +1,5 @@
+# Wrote by Luis D. Hernandez with assistance from ChatGPT and GenAI
+# Date: December 2025
 # Main file for rps game
 
 from game_single import game_single

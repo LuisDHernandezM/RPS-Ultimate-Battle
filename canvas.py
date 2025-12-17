@@ -1,3 +1,5 @@
+# Wrote by Luis D. Hernandez with assistance from ChatGPT and GenAI
+# Date: December 2025
 # Canvas for the character making in the rps game
 # Keeping user's character as drawing and importing the image into arena_template.py
 

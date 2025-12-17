@@ -1,3 +1,5 @@
+# Wrote by Luis D. Hernandez with assistance from ChatGPT and GenAI
+# Date: December 2025
 # File for AI logic in the RPS Battle Arena game
 
 import random

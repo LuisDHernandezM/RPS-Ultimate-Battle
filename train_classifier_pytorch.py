@@ -1,3 +1,5 @@
+# Wrote by Luis D. Hernandez with assistance from ChatGPT and GenAI
+# Date: December 2025
 # This is for training the classifier (AI)
 
 import torch  # type: ignore

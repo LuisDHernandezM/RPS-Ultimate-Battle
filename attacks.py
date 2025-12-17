@@ -1,3 +1,5 @@
+# Wrote by Luis D. Hernandez with assistance from ChatGPT and GenAI
+# Date: December 2025
 # File that handles the different attack mechanics
 
 import pygame # type: ignore

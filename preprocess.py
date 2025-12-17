@@ -1,3 +1,5 @@
+# Wrote by Luis D. Hernandez with assistance from ChatGPT and GenAI
+# Date: December 2025
 # This file is for processing the drawings and cleaning it up
 # # It uses OpenCV to preprocess the image for model prediction
 

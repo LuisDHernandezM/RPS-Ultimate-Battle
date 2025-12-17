@@ -1,4 +1,7 @@
+# Wrote by Luis D. Hernandez with assistance from ChatGPT and GenAI
+# Date: December 2025
 # Game loop for single player mode
+
 import pygame # type: ignore
 import sys
 import time
